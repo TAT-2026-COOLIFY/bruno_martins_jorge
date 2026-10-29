@@ -1,0 +1,45 @@
+package br.com.api.petpoints.domain.users.cliente.features.meuspagamentos.dto;
+
+import br.com.api.petpoints.shared.enums.StatusPagamentoEnum;
+import br.com.api.petpoints.shared.enums.TipoPagamentoEnum;
+import br.com.api.petpoints.shared.models.ConsultaModel;
+import br.com.api.petpoints.shared.utils.LocalDateTimeUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class PagamentosDto {
+
+    private Long id;
+    private Long idConsulta;
+    private BigDecimal valor;
+    private String dataLimitePagamento;
+    private StatusPagamentoEnum statusPagamento;
+    private TipoPagamentoEnum tipoPagamento;
+    private String motivoIndeferimento;
+    private boolean atrasado;
+
+    public PagamentosDto(ConsultaModel consulta) {
+        this.id = consulta.getPagamento().getId();
+        this.idConsulta = consulta.getId();
+        this.valor = consulta.getPagamento().getValorPagamento();
+        this.dataLimitePagamento = LocalDateTimeUtils.converterLocalDateTimeParaPtBr(consulta.getPagamento().getDataPagamento());
+        this.statusPagamento = consulta.getPagamento().getStatusPagamento();
+        this.tipoPagamento = consulta.getPagamento().getTipoPagamento();
+        this.motivoIndeferimento = consulta.getPagamento().getMotivoIndeferimento();
+        this.atrasado = consulta.getPagamento() != null && consulta.getPagamento().getDataPagamento() != null && !consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.ENVIADO) && !consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.APROVADO) && consulta.getPagamento().getDataPagamento().isBefore(LocalDateTime.now());
+    }
+
+    public static List<PagamentosDto> convert(List<ConsultaModel> consultas) {
+        return consultas.stream().map(PagamentosDto::new).toList();
+    }
+}

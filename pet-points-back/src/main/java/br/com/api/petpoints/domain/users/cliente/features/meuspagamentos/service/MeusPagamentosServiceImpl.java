@@ -1,0 +1,145 @@
+package br.com.api.petpoints.domain.users.cliente.features.meuspagamentos.service;
+
+import br.com.api.petpoints.domain.auth.exception.UsuarioNaoEncontrado;
+import br.com.api.petpoints.domain.users.cliente.features.meuspagamentos.dto.CardsPagamentoDto;
+import br.com.api.petpoints.domain.users.cliente.features.meuspagamentos.dto.DetalhesPagamentoDto;
+import br.com.api.petpoints.domain.users.cliente.features.meuspagamentos.dto.PagamentosDto;
+import br.com.api.petpoints.domain.users.cliente.features.minhasconsultas.dto.MinhasConsultasDto;
+import br.com.api.petpoints.domain.users.cliente.shared.dto.PagamentoConsultaDto;
+import br.com.api.petpoints.shared.enums.StatusConsultaEnum;
+import br.com.api.petpoints.shared.enums.StatusPagamentoEnum;
+import br.com.api.petpoints.shared.enums.TipoPagamentoEnum;
+import br.com.api.petpoints.shared.exception.custom.ObjectNotFoundException;
+import br.com.api.petpoints.shared.features.payment.dto.MercadoPagoDto;
+import br.com.api.petpoints.shared.features.payment.dto.PagamentoDto;
+import br.com.api.petpoints.shared.features.payment.service.PagamentoService;
+import br.com.api.petpoints.shared.models.*;
+import br.com.api.petpoints.shared.repository.*;
+import com.stripe.model.checkout.Session;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class MeusPagamentosServiceImpl implements MeusPagamentosService {
+
+    private final ConsultaRepository consultaRepository;
+    private final PagamentoRepository pagamentoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ArquivoRepository arquivoRepository;
+    private final ComprovanteRepository comprovanteRepository;
+    private final PagamentoService pagamentoService;
+
+    private UsuarioModel getUsuarioPorId(Long idUsuario) {
+        return this.usuarioRepository.findById(idUsuario).orElseThrow(() -> new UsuarioNaoEncontrado("Usuário com ID: " + idUsuario));
+    }
+
+    private ConsultaModel getConsultaPorId(Long idConsulta) {
+        return this.consultaRepository.findById(idConsulta).orElseThrow(() -> new ObjectNotFoundException("Consulta com ID: " + idConsulta + " não encontrada!"));
+    }
+
+    private PagamentoModel getPagamentoPorId(Long idPagamento) {
+        return this.pagamentoRepository.findById(idPagamento).orElseThrow(() -> new ObjectNotFoundException("Pagamento com ID: " + idPagamento + " não encontrado!"));
+    }
+
+    @Override
+    public CardsPagamentoDto buscarInformacoesCards(Long idUsuario) {
+        List<ConsultaModel> consultas = this.consultaRepository.findAllBySolicitante_Id(idUsuario);
+        int efetuados = consultas.stream().filter(consulta -> consulta.getStatus().equals(StatusConsultaEnum.FINALIZADO) && (consulta.getPagamento() != null && consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.ENVIADO) || (consulta.getPagamento() != null && consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.APROVADO)))).toList().size();
+        int atrasados = consultas.stream().filter(consulta -> consulta.getStatus().equals(StatusConsultaEnum.FINALIZADO) && consulta.getPagamento() != null && consulta.getPagamento().getDataLimitePagamento() != null && consulta.getPagamento().getDataLimitePagamento().isBefore(LocalDateTime.now())).toList().size();
+        int pendentes = consultas.stream().filter(consulta -> consulta.getStatus().equals(StatusConsultaEnum.FINALIZADO) && consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.PENDENTE)).toList().size();
+        return new CardsPagamentoDto(efetuados, pendentes, atrasados);
+    }
+
+    @Override
+    public List<PagamentosDto> listarPagamentosPendentesAtrasados(Long idUsuario) {
+        List<ConsultaModel> consultas = this.consultaRepository.buscarConsultasPorUsuarioComPagamentosPendentes(idUsuario);
+        return PagamentosDto.convert(consultas);
+    }
+
+    @Override
+    public List<PagamentosDto> listarPagamentosReprovados(Long idUsuario) {
+        List<ConsultaModel> consultas = this.consultaRepository.findAllByPagamento_StatusPagamentoAndSolicitante_Id(StatusPagamentoEnum.REPROVADO, idUsuario);
+        return PagamentosDto.convert(consultas);
+    }
+
+    @Override
+    public List<PagamentosDto> listarHistoricoPagamentos(Long idUsuario) {
+        List<ConsultaModel> consultas = this.consultaRepository.findAllBySolicitante_Id(idUsuario).stream().filter(consulta ->
+                consulta.getPagamento() != null &&
+                        !consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.REPROVADO) &&
+                        !consulta.getPagamento().getStatusPagamento().equals(StatusPagamentoEnum.PENDENTE)).toList();
+        return PagamentosDto.convert(consultas);
+    }
+
+    @Override
+    public MinhasConsultasDto buscarInformacoesConsultaPagamento(Long idConsulta) {
+        ConsultaModel consulta = this.getConsultaPorId(idConsulta);
+        return new MinhasConsultasDto(consulta);
+    }
+
+    @Override
+    @Transactional
+    public void alterarFormaPagamento(Long idPagamento, TipoPagamentoEnum novaForma) {
+        PagamentoModel pagamento = this.getPagamentoPorId(idPagamento);
+        if (pagamento.getStatusPagamento() == StatusPagamentoEnum.APROVADO)
+            throw new RuntimeException("O pagamento já foi aprovado, então não pode mais receber alterações!");
+        pagamento.setTipoPagamento(novaForma);
+        pagamento.setStatusPagamento(StatusPagamentoEnum.PENDENTE);
+        this.pagamentoRepository.save(pagamento);
+    }
+
+    @Override
+    public PagamentoConsultaDto buscarPagamentoPorId(Long idPagamento) {
+        PagamentoModel pagamento = this.getPagamentoPorId(idPagamento);
+        ConsultaModel consulta = this.consultaRepository.findByPagamento_Id(idPagamento).orElseThrow(() -> new EntityNotFoundException("Consulta não encontrada para o pagamento Nº " + idPagamento));
+        if (!pagamento.getTipoPagamento().equals(TipoPagamentoEnum.PIX)) {
+            return new PagamentoConsultaDto(pagamento, consulta);
+        } else {
+            try {
+                MercadoPagoDto.OrderResponse informacoesPagamento = this.pagamentoService.buscarPagamentoPix(pagamento.getId());
+                PagamentoDto.PagamentoPixResponse respostaPix = this.pagamentoService.getPagamentoPixResponse(informacoesPagamento, pagamento);
+                return new PagamentoConsultaDto(pagamento, respostaPix, consulta);
+            } catch (Exception e) {
+                log.error("Ocorreu um erro ao buscar os detalhes do pagamento via PIX desse pagamento! {}", idPagamento);
+            }
+            return null;
+        }
+    }
+
+    @Transactional
+    public PagamentoDto.StatusPagamentoResponse sincronizarCheckoutPorSessao(String sessionId) {
+
+        PagamentoModel pagamento = pagamentoRepository.findByIdPagamentoExterno(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Pagamento não encontrado para a sessão: " + sessionId));
+
+        Session session = this.pagamentoService.sincronizarCheckoutStripe(pagamento);
+
+        return new PagamentoDto.StatusPagamentoResponse(
+                pagamento.getId(),
+                session.getId(),
+                pagamento.getStatusPagamento().name(),
+                session.getStatus(),        // complete / expired / open
+                session.getPaymentStatus()  // paid / unpaid / no_payment_required
+        );
+    }
+
+    public Map<String, String> iniciarCheckout(Long idUsuario, Long idPagamento) {
+        UsuarioModel usuario = this.getUsuarioPorId(idUsuario);
+        String url = this.pagamentoService.iniciarCheckoutStripe(idPagamento, usuario);
+        return Map.of("checkoutUrl", url);
+    }
+}

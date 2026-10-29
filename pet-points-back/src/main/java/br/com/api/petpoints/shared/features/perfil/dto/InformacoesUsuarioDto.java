@@ -1,0 +1,36 @@
+package br.com.api.petpoints.shared.features.perfil.dto;
+
+import br.com.api.petpoints.shared.enums.GeneroEnum;
+import br.com.api.petpoints.shared.models.UsuarioModel;
+import br.com.api.petpoints.shared.utils.LocalDateUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class InformacoesUsuarioDto {
+    private String nome;
+    private LocalDate dataNascimento;
+    private GeneroEnum genero;
+    private String email;
+    private String telefone;
+    private String cpf;
+    private UUID imagem;
+
+    public InformacoesUsuarioDto(UsuarioModel usuario) {
+        this.nome = usuario.getNome();
+        this.dataNascimento = usuario.getDataNascimento();
+        this.genero = usuario.getGenero();
+        this.email = usuario.getEmail();
+        this.telefone = usuario.getTelefone();
+        this.cpf = usuario.getCpf();
+        this.imagem = usuario.getImagem();
+    }
+}
