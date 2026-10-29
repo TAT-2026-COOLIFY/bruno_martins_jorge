@@ -1,0 +1,222 @@
+.detalhes-consulta {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .identificacao {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .agendamento {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+      color: var(--color-text);
+      font-size: 0.85rem;
+
+      i {
+        color: var(--color-sub-text);
+      }
+    }
+  }
+
+  .envolvidos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    .envolvido {
+      flex: 1 1 calc(50% - 0.375rem);
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background-color: var(--card);
+
+      app-imagem {
+        flex-shrink: 0;
+        display: flex;
+      }
+
+      .infos {
+        display: flex;
+        flex-direction: column;
+        overflow-wrap: anywhere;
+
+        .papel {
+          color: var(--color-sub-text);
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        strong {
+          color: var(--color-title);
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+
+  .resumo-valor {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background-color: var(--card);
+
+    .valor {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      span {
+        color: var(--color-sub-text);
+        font-size: 0.85rem;
+      }
+
+      strong {
+        color: var(--color-title);
+        font-size: 2rem;
+        line-height: 1;
+
+        small {
+          font-size: 1rem;
+          color: var(--color-text);
+          margin-right: 0.25rem;
+        }
+      }
+    }
+
+    .marcadores {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  }
+
+  .campos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .campo {
+      flex: 1 1 calc(33% - 0.75rem);
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      &.full {
+        flex: 1 1 100%;
+      }
+
+      label {
+        color: var(--color-sub-text);
+        font-size: 0.8rem;
+      }
+
+      .valor-campo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background-color: var(--card);
+        color: var(--color-title);
+        font-size: 0.9rem;
+        min-height: 45px;
+        overflow-wrap: anywhere;
+
+        &.vazio {
+          color: var(--color-sub-text);
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  .titulo-secao {
+    margin: 1rem 0 0.5rem 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-card-primary);
+
+    &.reprovado {
+      color: var(--bag-reprovado);
+    }
+  }
+
+  .bloco-texto {
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background-color: var(--card);
+    color: var(--color-text);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+
+    &.vazio {
+      color: var(--color-sub-text);
+      font-style: italic;
+    }
+
+    &.reprovado {
+      border-color: var(--bag-reprovado);
+      background-color: var(--bag-reprovado-foreground);
+    }
+  }
+
+  .pontuacao {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background-color: var(--card);
+
+    span {
+      color: var(--color-sub-text);
+      font-size: 0.85rem;
+    }
+  }
+
+  .data-avaliacao,
+  .aviso {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: var(--color-sub-text);
+    font-size: 0.8rem;
+
+    strong {
+      color: var(--color-text);
+    }
+  }
+
+  .data-avaliacao {
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,49 @@
+<p-overlaybadge
+  [badgeDisabled]="foiAbertoNotificiacoes || notificacoes.length === 0"
+  [value]="notificacoes.length"
+  severity="info"
+>
+  <p-button
+    icon="fa fa-bell"
+    tooltipPosition="left"
+    pTooltip="Notificações"
+    severity="secondary"
+    (click)="alterarPopover()"
+  />
+</p-overlaybadge>
+<p-popover #op (onHide)="fehcarPopover()">
+  @if (notificacoes.length > 0) {
+    <p-dataview #dv [value]="notificacoes" [paginator]="true" [rows]="4">
+      <ng-template #list let-listanotificacoes>
+        <div class="lista-notificacoes">
+          @for (notificacao of listanotificacoes; track notificacao.id) {
+            <div class="notificacao-card">
+              <div class="icon">
+                <i [class]="getIcone(notificacao.tipo)"></i>
+              </div>
+              <div class="infos">
+                <span class="titulo">{{ notificacao.titulo }}</span>
+                <span class="mensagem">{{ notificacao.mensagem }}</span>
+                <span class="data">
+                  <i class="fa fa-calendar"></i
+                  >{{ notificacao.data | date: "dd/MM/yyyy" }}
+                </span>
+              </div>
+              <p-button
+                icon="fa far fa-bookmark"
+                severity="info"
+                size="small"
+                variant="outlined"
+                (click)="marcarComoLida(notificacao)"
+              />
+            </div>
+          }
+        </div>
+      </ng-template>
+    </p-dataview>
+  } @else {
+    <span class="sem-notificacoes"
+      ><i class="fa-solid fa-envelope-open"></i>Nenhuma notificação recebida!
+    </span>
+  }
+</p-popover>

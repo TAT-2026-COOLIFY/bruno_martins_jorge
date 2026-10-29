@@ -1,0 +1,12 @@
+span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3em 0.5em;
+  border-radius: 50px;
+  font-size: 0.8em;
+  font-weight: 600;
+  border: 2px solid var(--cor-log, var(--color-border));
+  background-color: color-mix(in srgb, var(--cor-log, var(--color-hover)) 15%, transparent);
+  color: var(--cor-log, var(--color-text));
+}

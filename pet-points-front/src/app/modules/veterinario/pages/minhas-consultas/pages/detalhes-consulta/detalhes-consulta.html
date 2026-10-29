@@ -1,0 +1,545 @@
+<p-dialog></p-dialog>
+<main>
+  <section>
+    <p-fieldset legend="Informações do Pet">
+      @if (carregandoInformacoesConsulta) {
+        <div class="card-info pet">
+          <div class="badges">
+            <p-skeleton width="100px" height="25px"></p-skeleton>
+            <p-skeleton width="100px" height="25px"></p-skeleton>
+          </div>
+          <div class="foto-base">
+            <p-skeleton width="180px" height="180px"></p-skeleton>
+            <div class="infos">
+              <h3>
+                <p-skeleton width="100%" height="25px"></p-skeleton> -
+                <p-skeleton width="100%" height="25px"></p-skeleton>
+              </h3>
+              <span>
+                <p-skeleton width="100%" height="25px"></p-skeleton>
+              </span>
+              <span>
+                <p-skeleton width="100%" height="25px"></p-skeleton>
+              </span>
+            </div>
+          </div>
+          <hr />
+          <div class="saude">
+            <p-skeleton width="25%" height="25px"></p-skeleton>
+            <p-skeleton width="100%" height="75px"></p-skeleton>
+          </div>
+        </div>
+      } @else {
+        @if (informacoesConsulta === null) {
+        } @else {
+          <div class="card-info pet">
+            <div class="badges">
+              <app-tipo-pet-bag
+                [tipo]="informacoesConsulta.pet.tipo"
+              ></app-tipo-pet-bag>
+              <app-genero-bag
+                [genero]="informacoesConsulta.pet.genero"
+              ></app-genero-bag>
+            </div>
+            <div class="foto-base">
+              <app-imagem
+                [urlImagem]="getImagemPet"
+                [imagemRedonda]="false"
+                [height]="'180'"
+                [width]="'180'"
+                [tamanhoTotal]="true"
+                [preview]="true"
+              ></app-imagem>
+              <div class="infos">
+                <h3>
+                  <span>
+                    {{ informacoesConsulta.pet.nome }} -
+                    {{ informacoesConsulta.pet.raca }}
+                  </span>
+                </h3>
+                <ul>
+                  <li>
+                    <i class="fa fas fa-birthday-cake"></i>Nascido Em:
+                    {{
+                      informacoesConsulta.pet.dataNascimento
+                        | date: "dd/MM/yyyy"
+                    }}
+                  </li>
+                  <li>
+                    <i class="fa fa-calendar"></i> Registrado Em:
+                    {{
+                      informacoesConsulta.pet.registradoEm
+                        | date: "dd/MM/yyyy - HH:mm"
+                    }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <hr />
+            <div class="saude">
+              <strong>Observações do Pet:</strong>
+              <textarea
+                disabled
+                [value]="informacoesConsulta.pet.problemasSaude"
+                pTextarea
+                rows="3"
+                style="resize: none; overflow-y: auto"
+              ></textarea>
+            </div>
+          </div>
+        }
+      }
+    </p-fieldset>
+    <p-fieldset legend="Informações do Cliente">
+      @if (carregandoInformacoesConsulta) {
+        <div class="card-info cliente">
+          <div class="badges">
+            <p-skeleton width="100px" height="25px"></p-skeleton>
+          </div>
+          <div class="foto-base">
+            <p-skeleton width="180px" height="180px"></p-skeleton>
+            <div class="infos">
+              <h3>
+                <p-skeleton width="100%" height="25px"></p-skeleton>
+              </h3>
+              <span>
+                <p-skeleton width="100%" height="25px"></p-skeleton>
+              </span>
+              <span>
+                <p-skeleton width="100%" height="25px"></p-skeleton>
+              </span>
+            </div>
+          </div>
+          <hr />
+          <div class="avaliacao">
+            <span>
+              <p-skeleton width="12px" height="12px"></p-skeleton>
+              <p-skeleton width="12px" height="12px"></p-skeleton>
+              <p-skeleton width="12px" height="12px"></p-skeleton>
+              <p-skeleton width="12px" height="12px"></p-skeleton>
+              <p-skeleton width="12px" height="12px"></p-skeleton>
+            </span>
+            <span>
+              <p-skeleton width="100%" height="50px"></p-skeleton>
+            </span>
+          </div>
+        </div>
+      } @else {
+        @if (informacoesConsulta === null) {
+        } @else {
+          <div class="card-info cliente">
+            <div class="badges">
+              <app-genero-bag
+                [genero]="informacoesConsulta.cliente.genero"
+              ></app-genero-bag>
+            </div>
+            <div class="foto-base">
+              <app-imagem
+                [urlImagem]="getImagemCliente"
+                [imagemRedonda]="false"
+                [height]="'180'"
+                [width]="'180'"
+                [tamanhoTotal]="true"
+                [preview]="true"
+              ></app-imagem>
+              <div class="infos">
+                <h3>
+                  <span>
+                    {{ informacoesConsulta.cliente.nome }}
+                  </span>
+                </h3>
+                <ul>
+                  <li>
+                    <i class="fa fas fa-mail-bulk"></i>
+                    {{ informacoesConsulta.cliente.email }} -
+                    <i class="fa fas fa-phone"></i>
+                    {{ informacoesConsulta.cliente.telefone }}
+                  </li>
+                  <li>
+                    <i class="fa fas fas fa-id-card"></i>
+                    {{ informacoesConsulta.cliente.cpf }}
+                  </li>
+                </ul>
+              </div>
+              <hr />
+              <div class="avaliacao">
+                @if (informacoesConsulta.avaliacao !== null) {
+                  <span>
+                    <p-rating
+                      [(ngModel)]="informacoesConsulta.avaliacao.pontuacao"
+                      disabled
+                    />
+                  </span>
+                  <textarea
+                    disabled
+                    [value]="informacoesConsulta.avaliacao.observacoes"
+                    pTextarea
+                    rows="3"
+                    style="resize: none; overflow-y: auto; width: 100%"
+                  ></textarea>
+                } @else {
+                  <span class="sem-resultados">Não Avaliado Ainda!</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </p-fieldset>
+  </section>
+  <section>
+    <p-fieldset legend="Informações da Consulta">
+      @if (carregandoInformacoesConsulta) {
+        <div class="card-info consulta">
+          <div class="status">
+            <p-skeleton width="20%" height="25px"></p-skeleton>
+          </div>
+          <div class="input-group">
+            <p-skeleton width="25%" height="25px"></p-skeleton>
+            <p-skeleton width="100%" height="50px"></p-skeleton>
+          </div>
+          <div class="datas">
+            <div class="input-group">
+              <p-skeleton width="25%" height="25px"></p-skeleton>
+              <p-skeleton width="100%" height="50px"></p-skeleton>
+            </div>
+            <div class="input-group">
+              <p-skeleton width="25%" height="25px"></p-skeleton>
+              <p-skeleton width="100%" height="50px"></p-skeleton>
+            </div>
+            <div class="input-group">
+              <p-skeleton width="25%" height="25px"></p-skeleton>
+              <p-skeleton width="100%" height="50px"></p-skeleton>
+            </div>
+            <div class="input-group">
+              <p-skeleton width="25%" height="25px"></p-skeleton>
+              <p-skeleton width="100%" height="50px"></p-skeleton>
+            </div>
+          </div>
+          <div class="observacoes">
+            <p-skeleton width="25%" height="25px"></p-skeleton>
+            <p-skeleton width="100%" height="150px"></p-skeleton>
+          </div>
+          <hr />
+          <div class="atendente">
+            <p-skeleton width="25%" height="25px"></p-skeleton>
+            <p-skeleton width="100%" height="50px"></p-skeleton>
+          </div>
+        </div>
+      } @else {
+        @if (informacoesConsulta === null) {
+        } @else {
+          <div class="card-info consulta">
+            <div class="status">
+              <app-bag-status-consulta
+                [status]="informacoesConsulta.status"
+              ></app-bag-status-consulta>
+            </div>
+            <div class="input-group">
+              <label for="tipo">Tipo de Consulta:</label>
+              <input
+                type="text"
+                disabled
+                [value]="informacoesConsulta.tipo"
+                pInputText
+              />
+            </div>
+            <div class="datas">
+              <div class="input-group">
+                <label for="data">Solicitado Em:</label>
+                <input
+                  type="text"
+                  disabled
+                  [value]="
+                    informacoesConsulta.dataSolicitacao
+                      | date: 'dd/MM/yyyy - HH:mm'
+                  "
+                  pInputText
+                />
+              </div>
+              <div class="input-group">
+                <label for="data">Aprovado/Reprovado Em:</label>
+                <input
+                  type="text"
+                  disabled
+                  [value]="
+                    informacoesConsulta.dataDeferimento
+                      | date: 'dd/MM/yyyy - HH:mm'
+                  "
+                  pInputText
+                />
+              </div>
+              <div class="input-group">
+                <label for="data">Data da Consulta:</label>
+                <input
+                  type="text"
+                  disabled
+                  [value]="
+                    informacoesConsulta.dataConsulta
+                      | date: 'dd/MM/yyyy - HH:mm'
+                  "
+                  pInputText
+                />
+              </div>
+              <div class="input-group">
+                <label for="data">Finalizado Em:</label>
+                <input
+                  type="text"
+                  disabled
+                  [value]="
+                    informacoesConsulta.dataFinalizacao !== null
+                      ? (informacoesConsulta.dataFinalizacao
+                        | date: 'dd/MM/yyyy - HH:mm')
+                      : 'Não Finalizado Ainda!'
+                  "
+                  pInputText
+                />
+              </div>
+            </div>
+            <div class="observacoes">
+              <label for="observacoes">Observações da Consulta:</label>
+              <textarea
+                disabled
+                [value]="informacoesConsulta.observacoes"
+                pTextarea
+                rows="3"
+                style="resize: none; overflow-y: auto"
+              ></textarea>
+            </div>
+            <hr />
+            <div class="atendente">
+              <label for="atendente"
+                >Solicitação Deferida/Indeferida Por:</label
+              >
+              <input
+                type="text"
+                disabled
+                [value]="informacoesConsulta.atendente"
+                pInputText
+              />
+            </div>
+          </div>
+        }
+      }
+    </p-fieldset>
+    @if (
+      !carregandoInformacoesConsulta &&
+      informacoesConsulta !== null &&
+      informacoesConsulta.dataFinalizacao !== null
+    ) {
+      <p-fieldset legend="Cobrança da Consulta">
+        <div class="card-info cobranca">
+          @if (informacoesConsulta.itens.length > 0) {
+            <p-table
+              [value]="informacoesConsulta.itens"
+              [stripedRows]="true"
+              [showGridlines]="true"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Item Lançado</th>
+                  <th>Qtd.</th>
+                  <th>Valor Unit.</th>
+                  <th>Subtotal</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-item>
+                <tr>
+                  <td>{{ item.nome }}</td>
+                  <td>{{ item.quantidade }}</td>
+                  <td>{{ item.valorUnitario | currency: "BRL" }}</td>
+                  <td>{{ item.valorTotal | currency: "BRL" }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          } @else {
+            <span class="sem-resultados">
+              Nenhum item foi lançado nesta consulta.
+            </span>
+          }
+          <ul class="totais">
+            <li>
+              <span>Valor da Consulta:</span>
+              <span>{{
+                informacoesConsulta.valorConsulta | currency: "BRL"
+              }}</span>
+            </li>
+            <li>
+              <span>Valor dos Itens:</span>
+              <span>{{
+                informacoesConsulta.valorItens | currency: "BRL"
+              }}</span>
+            </li>
+            <li class="total">
+              <span>Total Cobrado:</span>
+              <span>{{
+                informacoesConsulta.valorTotal | currency: "BRL"
+              }}</span>
+            </li>
+          </ul>
+        </div>
+      </p-fieldset>
+    }
+    <p-button
+      [label]="getTextoBtn"
+      [severity]="getTipoBtn"
+      fluid
+      [icon]="
+        carregandoInformacoesConsulta
+          ? 'pi pi-spin pi-spinner'
+          : 'pi pi-check-circle'
+      "
+      rounded="true"
+      [disabled]="carregandoInformacoesConsulta || !habilitarBotao"
+      (click)="iniciarOuFinalizarConsulta()"
+    />
+    @if (
+      informacoesConsulta !== null &&
+      informacoesConsulta.status === "FINALIZADO"
+    ) {
+      <p-button
+        [label]="gerandoPrescricao ? 'Gerando Prescrição...' : 'Gerar Prescrição'"
+        severity="secondary"
+        fluid
+        [icon]="
+          carregandoInformacoesConsulta || gerandoPrescricao
+            ? 'pi pi-spin pi-spinner'
+            : 'pi pi-file'
+        "
+        rounded="true"
+        outlined="true"
+        [disabled]="carregandoInformacoesConsulta || gerandoPrescricao"
+        (click)="abrirDialogPrescricao()"
+      />
+    }
+  </section>
+</main>
+<p-dialog
+  [(visible)]="visibilidadeFinalizarConsulta"
+  header="Finalizar Consulta"
+  [modal]="true"
+  [draggable]="false"
+  [closable]="false"
+  [style]="{ minWidth: '300px', maxWidth: '700px', width: '100%' }"
+>
+  <p style="text-align: center; color: var(--color-text); margin: 2rem">
+    Por favor, insira a baixo como foi o decorrer da consulta, para ser mantido
+    um registro.
+  </p>
+  <hr />
+  <textarea
+    name="observacoes"
+    id="observacoes"
+    pTextarea
+    [(ngModel)]="resumoConsulta"
+    fluid
+  ></textarea>
+  <hr />
+  @if (visibilidadeFinalizarConsulta) {
+    <app-itens-cobranca-consulta
+      [valorConsulta]="valorConsulta"
+      (itensAlterados)="itensCobranca = $event"
+    ></app-itens-cobranca-consulta>
+  }
+  <div class="botoes-dialog">
+    <p-button
+      label="Finalizar Consulta"
+      fluid
+      icon="pi pi-check-circle"
+      severity="danger"
+      size="small"
+      (click)="enviarFinalizarConsulta()"
+      [disabled]="resumoConsulta.trim().length === 0 || finalizandoConsulta"
+    ></p-button>
+    <p-button
+      label="Cancelar"
+      fluid
+      icon="pi pi-times"
+      severity="secondary"
+      size="small"
+      (click)="fecharDialogFinalizarConsulta()"
+      [disabled]="finalizandoConsulta"
+    ></p-button>
+  </div>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="visibilidadePrescricao"
+  header="Gerar Prescrição"
+  [modal]="true"
+  [draggable]="false"
+  [closable]="false"
+  [style]="{ minWidth: '300px', maxWidth: '800px', width: '100%' }"
+>
+  <p style="text-align: center; color: var(--color-text); margin: 2rem">
+    Informe os dados da receita do pet. O documento será gerado em PDF e ficará
+    registrado na consulta.
+  </p>
+  <hr />
+  <div class="campos-prescricao">
+    <div class="input-group">
+      <label for="diagnosticoPrescricao">Diagnóstico / Indicação:</label>
+      <textarea
+        id="diagnosticoPrescricao"
+        name="diagnosticoPrescricao"
+        pTextarea
+        [(ngModel)]="diagnosticoPrescricao"
+        rows="2"
+        placeholder="Descreva o diagnóstico ou a indicação clínica"
+        fluid
+      ></textarea>
+    </div>
+    <div class="input-group">
+      <label for="orientacoesPrescricao">Orientações ao Tutor:</label>
+      <textarea
+        id="orientacoesPrescricao"
+        name="orientacoesPrescricao"
+        pTextarea
+        [(ngModel)]="orientacoesPrescricao"
+        rows="2"
+        placeholder="Cuidados, alimentação, restrições e demais recomendações"
+        fluid
+      ></textarea>
+    </div>
+    <div class="input-group">
+      <label for="retornoPrescricao">Retorno / Reavaliação:</label>
+      <p-datepicker
+        id="retornoPrescricao"
+        [(ngModel)]="dataRetornoPrescricao"
+        [showTime]="true"
+        [showIcon]="true"
+        [showButtonBar]="true"
+        dateFormat="dd/mm/yy"
+        placeholder="Data prevista para reavaliação"
+        appendTo="body"
+        fluid
+      ></p-datepicker>
+    </div>
+  </div>
+  <hr />
+  @if (visibilidadePrescricao) {
+    <app-itens-prescricao-consulta
+      (itensAlterados)="itensPrescricao = $event"
+    ></app-itens-prescricao-consulta>
+  }
+  <div class="botoes-dialog">
+    <p-button
+      [label]="gerandoPrescricao ? 'Gerando...' : 'Gerar Prescrição'"
+      fluid
+      [icon]="gerandoPrescricao ? 'pi pi-spin pi-spinner' : 'pi pi-file'"
+      severity="success"
+      size="small"
+      (click)="gerarPrescricao()"
+      [disabled]="!podeGerarPrescricao"
+    ></p-button>
+    <p-button
+      label="Cancelar"
+      fluid
+      icon="pi pi-times"
+      severity="secondary"
+      size="small"
+      (click)="fecharDialogPrescricao()"
+      [disabled]="gerandoPrescricao"
+    ></p-button>
+  </div>
+</p-dialog>

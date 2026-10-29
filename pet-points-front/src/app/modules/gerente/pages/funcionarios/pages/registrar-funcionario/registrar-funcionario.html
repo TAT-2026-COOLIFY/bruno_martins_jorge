@@ -1,0 +1,427 @@
+<!-- eslint-disable @angular-eslint/template/label-has-associated-control -->
+<main>
+  <form [formGroup]="formulario">
+    <section>
+      <p-fieldset
+        [style]="{ height: '100%' }"
+        class="cargos"
+        legend="Cargo"
+        [toggleable]="false"
+      >
+        <div class="lista-cargos">
+          <div class="cargo">
+            <span>
+              <input
+                type="radio"
+                id="gerente"
+                name="permissao"
+                value="G"
+                checked
+                formControlName="permissao"
+              />
+              <label for="gerente">Gerente</label>
+            </span>
+            <i id="icon" class="fa fa-user-gear"></i>
+          </div>
+          <div class="cargo">
+            <span>
+              <input
+                type="radio"
+                id="atendente"
+                name="permissao"
+                value="A"
+                formControlName="permissao"
+              />
+              <label for="atendente">Atendente</label>
+            </span>
+            <i id="icon" class="fa fa-user-tie"></i>
+          </div>
+          <div class="cargo">
+            <span>
+              <input
+                type="radio"
+                id="veterinario"
+                name="permissao"
+                value="V"
+                formControlName="permissao"
+              />
+              <label for="veterinario">Veterinário</label>
+            </span>
+            <i id="icon" class="fa fa-user-doctor"></i>
+          </div>
+          <div class="cargo">
+            <span>
+              <input
+                type="radio"
+                id="estoquista"
+                name="permissao"
+                value="E"
+                formControlName="permissao"
+              />
+              <label for="estoquista">Estoquista</label>
+            </span>
+            <i id="icon" class="fa fa-people-carry-box"></i>
+          </div>
+        </div>
+        <hr />
+        <p class="legenda">
+          <span> Selecione o cargo do funcionario que deseja adicionar </span>
+          <i> Cada cargo possui um conjunto de permissoes </i>
+        </p>
+      </p-fieldset>
+      <p-fieldset
+        [style]="{ height: '100%' }"
+        legend="Permissões"
+        [toggleable]="false"
+      >
+        @if (getPermissoes.length === 0) {
+          <strong style="display: flex; justify-content: center">
+            Por favor selecione um cargo
+          </strong>
+        } @else {
+          <div class="lista-permissoes">
+            @for (permissao of getPermissoes; track permissao) {
+              <span class="permissao">
+                {{ permissao }}
+              </span>
+            }
+          </div>
+        }
+      </p-fieldset>
+    </section>
+    <section>
+      <p-fieldset
+        [style]="{ height: '100%' }"
+        legend="Informações Pessoais"
+        [toggleable]="false"
+      >
+        <div class="informacoes">
+          <div class="input-group">
+            <label
+              for="email"
+              [class.invalid-data]="
+                formulario.get('email')?.invalid &&
+                formulario.get('email')?.touched
+              "
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              pInputText
+              id="email"
+              formControlName="email"
+              placeholder="Email"
+              [invalid]="
+                formulario.get('email')?.invalid &&
+                formulario.get('email')?.touched
+              "
+              [class.ng-invalid]="
+                formulario.get('email')?.invalid &&
+                formulario.get('email')?.touched
+              "
+            />
+            @if (
+              formulario.get("email")?.invalid &&
+              formulario.get("email")?.touched
+            ) {
+              <span class="invalid-data">Email inválido!</span>
+            }
+          </div>
+
+          <div class="input-group">
+            <label
+              [class.invalid-data]="
+                formulario.get('senha')?.invalid &&
+                formulario.get('senha')?.touched
+              "
+            >
+              Senha
+            </label>
+            <p-password
+              [toggleMask]="true"
+              placeholder="Senha"
+              [feedback]="false"
+              formControlName="senha"
+              [invalid]="
+                formulario.get('senha')?.invalid &&
+                formulario.get('senha')?.touched
+              "
+            />
+            @if (
+              formulario.get("senha")?.invalid &&
+              formulario.get("senha")?.touched
+            ) {
+              <span class="invalid-data">Senha inválida!</span>
+            }
+          </div>
+
+          <div class="input-group">
+            <label
+              for="nome"
+              [class.invalid-data]="
+                formulario.get('nome')?.invalid &&
+                formulario.get('nome')?.touched
+              "
+            >
+              Nome
+            </label>
+            <input
+              type="text"
+              pInputText
+              id="nome"
+              formControlName="nome"
+              placeholder="Nome"
+              [invalid]="
+                formulario.get('nome')?.invalid &&
+                formulario.get('nome')?.touched
+              "
+              [class.ng-invalid]="
+                formulario.get('nome')?.invalid &&
+                formulario.get('nome')?.touched
+              "
+            />
+            @if (
+              formulario.get("nome")?.invalid && formulario.get("nome")?.touched
+            ) {
+              <span class="invalid-data">Nome inválido!</span>
+            }
+          </div>
+
+          <div class="input-group">
+            <label
+              for="cpf"
+              [class.invalid-data]="
+                formulario.get('cpf')?.invalid && formulario.get('cpf')?.touched
+              "
+            >
+              CPF
+            </label>
+            <p-inputmask
+              mask="999.999.999-99"
+              placeholder="999.999.999-99"
+              formControlName="cpf"
+              id="cpf"
+              [style]="{ width: '100%' }"
+              [invalid]="
+                formulario.get('cpf')?.invalid && formulario.get('cpf')?.touched
+              "
+            />
+            @if (
+              formulario.get("cpf")?.invalid && formulario.get("cpf")?.touched
+            ) {
+              <span class="invalid-data">CPF inválido!</span>
+            }
+          </div>
+
+          <div class="input-group">
+            <label
+              for="telefone"
+              [class.invalid-data]="
+                formulario.get('telefone')?.invalid &&
+                formulario.get('telefone')?.touched
+              "
+            >
+              Telefone
+            </label>
+            <p-inputmask
+              mask="(999) 99999-9999"
+              placeholder="(999) 99999-9999"
+              formControlName="telefone"
+              id="telefone"
+              [style]="{ width: '100%' }"
+              [invalid]="
+                formulario.get('telefone')?.invalid &&
+                formulario.get('telefone')?.touched
+              "
+            />
+            @if (
+              formulario.get("telefone")?.invalid &&
+              formulario.get("telefone")?.touched
+            ) {
+              <span class="invalid-data">Telefone inválido!</span>
+            }
+          </div>
+
+          <div class="input-group">
+            <label
+              [class.invalid-data]="
+                formulario.get('genero')?.invalid &&
+                formulario.get('genero')?.touched
+              "
+            >
+              Gênero
+            </label>
+            <p-select
+              [options]="generos"
+              formControlName="genero"
+              appendTo="body"
+              placeholder="Selecione um gênero"
+              [invalid]="
+                formulario.get('genero')?.invalid &&
+                formulario.get('genero')?.touched
+              "
+            ></p-select>
+            @if (
+              formulario.get("genero")?.invalid &&
+              formulario.get("genero")?.touched
+            ) {
+              <span class="invalid-data">Selecione um gênero!</span>
+            }
+          </div>
+
+          <div class="input-group">
+            <label
+              [class.invalid-data]="
+                !maiorIdade && formulario.get('dataNascimento')?.touched
+              "
+            >
+              Data de Nascimento
+            </label>
+            <p-datepicker
+              [invalid]="
+                !maiorIdade && formulario.get('dataNascimento')?.touched
+              "
+              placeholder="Data de Nascimento"
+              formControlName="dataNascimento"
+              dateFormat="dd/mm/yy"
+              fluid
+              [maxDate]="dataMaxima"
+              appendTo="body"
+            />
+            @if (!maiorIdade && formulario.get("dataNascimento")?.touched) {
+              <span class="invalid-data">
+                Valor inválido na data de nascimento!
+              </span>
+            }
+          </div>
+
+          @if (veterinario) {
+            <div class="input-group">
+              <label
+                [class.invalid-data]="
+                  formulario.get('crmv')?.invalid &&
+                  formulario.get('crmv')?.touched
+                "
+              >
+                CRMV
+              </label>
+              <input
+                type="text"
+                pInputText
+                formControlName="crmv"
+                placeholder="CRMV do Veterinário..."
+                [invalid]="
+                  formulario.get('crmv')?.invalid &&
+                  formulario.get('crmv')?.touched
+                "
+              />
+              @if (
+                formulario.get("crmv")?.invalid &&
+                formulario.get("crmv")?.touched
+              ) {
+                <span class="invalid-data">Insira o CRMV!</span>
+              }
+            </div>
+            <div class="input-group">
+              <label
+                [class.invalid-data]="
+                  formulario.get('especializacao')?.invalid &&
+                  formulario.get('especializacao')?.touched
+                "
+              >
+                Especialização
+              </label>
+              <p-select
+                [options]="especialziacoes"
+                formControlName="especializacao"
+                appendTo="body"
+                placeholder="Selecione uma especialização"
+                [invalid]="
+                  formulario.get('especializacao')?.invalid &&
+                  formulario.get('especializacao')?.touched
+                "
+              ></p-select>
+              @if (
+                formulario.get("especializacao")?.invalid &&
+                formulario.get("especializacao")?.touched
+              ) {
+                <span class="invalid-data">Selecione uma especialização!</span>
+              }
+            </div>
+          }
+        </div>
+      </p-fieldset>
+      <p-fieldset
+        [style]="{ height: '100%' }"
+        legend="Novo Registro"
+        [toggleable]="false"
+      >
+        <div class="registro">
+          <div class="cabecalho">
+            <div class="foto">
+              <img src="" alt="" />
+            </div>
+            <p>
+              <strong>
+                {{ formulario.get("nome")?.value }}
+              </strong>
+              <span>
+                {{ getDescricaoCargo }}
+              </span>
+            </p>
+          </div>
+          <div class="informacoes">
+            <ul>
+              <li>
+                <span
+                  ><strong>Email:</strong>
+                  {{ formulario.get("email")?.value }}</span
+                >
+              </li>
+              <li>
+                <span
+                  ><strong>CPF:</strong>
+                  {{ formulario.get("cpf")?.value }}</span
+                >
+              </li>
+              <li>
+                <span
+                  ><strong>Telefone:</strong>
+                  {{ formulario.get("telefone")?.value }}</span
+                >
+              </li>
+              <li>
+                <span
+                  ><strong>Gênero:</strong>
+                  {{
+                    formulario.get("genero")?.value !== ""
+                      ? formulario.get("genero")?.value === "M"
+                        ? "Masculino"
+                        : "Feminino"
+                      : ""
+                  }}</span
+                >
+              </li>
+              <li>
+                <span
+                  ><strong>Data de Nascimento:</strong>
+                  {{
+                    formulario.get("dataNascimento")?.value | date: "dd/MM/yyyy"
+                  }}</span
+                >
+              </li>
+            </ul>
+          </div>
+          <hr />
+          <p-button
+            icon="pi pi-user-plus"
+            label="Registrar Funcionário"
+            [disabled]="formulario.invalid"
+            (click)="cadastrarFuncionario()"
+          ></p-button>
+        </div>
+      </p-fieldset>
+    </section>
+  </form>
+</main>

@@ -1,0 +1,31 @@
+<div class="cards-padrao">
+  @if (carregando) {
+    <span style="display: flex; gap: 1rem; width: 100%">
+      <p-skeleton height="140px" />
+      <p-skeleton height="140px" />
+      <p-skeleton height="140px" />
+    </span>
+  } @else if (cards) {
+    <app-card-resumo
+      titulo="Consultas Finalizadas"
+      icone="fa fas fa-clipboard-list"
+      variante="sucesso"
+      [valor]="cards.consultasFinalizadas"
+      descricao="Consultas Finalizadas"
+    />
+    <app-card-resumo
+      titulo="Consultas Pendentes"
+      icone="fa fas fa-clock"
+      variante="pendente"
+      [valor]="cards.consultasPendentes"
+      descricao="Aguardando Avaliação"
+    />
+    <app-card-resumo
+      titulo="Consultas Indeferidas/Canceladas"
+      icone="fa fas fa-exclamation-triangle"
+      variante="perigo"
+      [valor]="cards.consultasIndeferidasCanceladas"
+      descricao="Consultas Indeferidas ou Canceladas"
+    />
+  }
+</div>

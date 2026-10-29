@@ -1,0 +1,238 @@
+<main>
+  <p-fieldset legend="Filtros" [toggleable]="false">
+    <div class="filtros">
+      <div class="inputs">
+        <div class="input-group">
+          <label for="nome">Nome do Cliente</label>
+          <input
+            [(ngModel)]="filtros.nome"
+            type="text"
+            pInputText
+            id="nome"
+            placeholder="Digite o nome do cliente"
+            (input)="filtrarClientes()"
+          />
+        </div>
+        <div class="input-group">
+          <label for="genero">Genero do Cliente</label>
+          <p-select
+            [options]="generosFiltros"
+            [(ngModel)]="filtros.genero"
+            appendTo="body"
+            placeholder="Selecione um gênero"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione um tipo de movimentação"
+            (onChange)="filtrarClientes()"
+          />
+        </div>
+      </div>
+      <div class="btns">
+        <p-button
+          label="Limpar Filtros"
+          severity="danger"
+          icon="fa fa-eraser"
+          (click)="limparFiltros()"
+        />
+        <p-button
+          label="Gerar Relatório"
+          severity="success"
+          [icon]="carregandoRelatorio ? 'fa fa-load' : 'fa fa-file'"
+          (click)="gerarRelatorioClientes()"
+          [disabled]="carregandoRelatorio"
+        />
+      </div>
+    </div>
+  </p-fieldset>
+  <hr />
+  <p-fieldset legend="Clientes" [toggleable]="false">
+    @if (clientesFiltrados.length > 0) {
+      <p-dataview
+        [value]="clientesFiltrados"
+        [style]="{ width: '100%' }"
+        [rows]="5"
+        [paginator]="true"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Exibindo {first} de {last} de {totalRecords}"
+        [rowsPerPageOptions]="[5, 10, 20]"
+      >
+        <ng-template #list let-items>
+          <section class="lista-clientes">
+            @for (cliente of items; track cliente.id) {
+              <div [class]="'card-clientes ' + cliente.genero.toLowerCase()">
+                <div class="imagem-cliente"></div>
+                <div class="informacoes">
+                  <div class="header">
+                    <h3>{{ cliente.nome }}</h3>
+                    <strong
+                      ><i class="pi pi-phone"></i>{{ cliente.telefone }}</strong
+                    >
+                  </div>
+                  <div class="outras">
+                    <app-genero-bag [genero]="cliente.genero"></app-genero-bag>
+                    <span
+                      >Registrado em
+                      {{ cliente.registradoEm | date: "dd/MM/yyyy" }}</span
+                    >
+                  </div>
+                </div>
+                <button
+                  pButton
+                  [severity]="'secondary'"
+                  icon="fa fa-user"
+                  (click)="verDetalhesCliente(cliente.id)"
+                >
+                  Acessar Perfil
+                </button>
+              </div>
+            }
+          </section>
+        </ng-template>
+        <ng-template #emptymessage>
+          <span class="sem-resultados">Nenhum cliente encontrado!</span>
+        </ng-template>
+        <ng-template #paginatorleft>
+          <p-button
+            label="Adicionar Novo Cliente"
+            icon="fa fa-user-plus"
+            severity="success"
+            (click)="visibilidadeDialogNovoCliente = true"
+          />
+        </ng-template>
+      </p-dataview>
+    } @else {
+      @if (filtros.nome.trim() !== "" || filtros.genero !== "") {
+        <strong>Nenhum cliente com os dados filtrados encontrado!</strong>
+      } @else {
+        <strong>Nenhum cliente cadastrado!</strong>
+      }
+    }
+  </p-fieldset>
+</main>
+<p-dialog
+  header="Novo Cliente"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [(visible)]="visibilidadeDialogNovoCliente"
+  [style]="{ width: '40%' }"
+  (onHide)="fecharDialogNovoCliente()"
+>
+  <p-stepper [value]="1">
+    <p-step-list>
+      <p-step [value]="1">Informações Basicas</p-step>
+      <p-step [value]="2">Informações Adicionais</p-step>
+    </p-step-list>
+    <p-step-panels>
+      <form [formGroup]="novoClienteForm">
+        <p-step-panel [value]="1">
+          <ng-template #content let-activateCallback="activateCallback">
+            <div class="input-group">
+              <label for="nome">Nome do Cliente</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="nome"
+                placeholder="Digite o nome do cliente"
+              />
+            </div>
+            <div class="input-group">
+              <label for="email">Email do Cliente</label>
+              <input
+                type="text"
+                pInputText
+                formControlName="email"
+                placeholder="Digite o email do cliente"
+              />
+            </div>
+            <div class="input-group">
+              <label for="senha">Senha do Cliente</label>
+              <p-password
+                formControlName="senha"
+                [toggleMask]="true"
+                placeholder="Digite a senha do cliente"
+                appendTo="body"
+                promptLabel="Insira a Senha"
+                weakLabel="Muito Simples"
+                mediumLabel="Mediana"
+                strongLabel="Complexa"
+              />
+            </div>
+            <div class="acao">
+              <p-button
+                label="Avançar"
+                icon="fa fa-arrow-right"
+                iconPos="right"
+                (click)="activateCallback(2)"
+                severity="success"
+                [disabled]="!primeiraEtapaNovoClienteValida"
+              />
+            </div>
+          </ng-template>
+        </p-step-panel>
+
+        <p-step-panel [value]="2">
+          <ng-template #content let-activateCallback="activateCallback">
+            <div class="metade">
+              <div class="input-group">
+                <label for="dataNascimento"
+                  >Data de Nascimento do Cliente</label
+                >
+                <p-datepicker
+                  formControlName="dataNascimento"
+                  appendTo="body"
+                  dateFormat="dd/mm/yy"
+                  placeholder="dd/mm/aaaa"
+                  fluid
+                />
+              </div>
+              <div class="input-group">
+                <label for="genero">Gênero do Cliente</label>
+                <p-select
+                  [options]="generos"
+                  formControlName="genero"
+                  appendTo="body"
+                  fluid
+                >
+                </p-select>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="telefone">Telefone do Cliente</label>
+              <p-inputmask
+                formControlName="telefone"
+                mask="(999)99999-9999"
+                placeholder="(999)99999-9999"
+                fluid
+              />
+            </div>
+            <div class="input-group">
+              <label for="cpf">CPF do Cliente</label>
+              <p-inputmask
+                formControlName="cpf"
+                mask="999.999.999-99"
+                placeholder="999.999.999-99"
+                fluid
+              />
+            </div>
+            <div class="acoes">
+              <p-button
+                label="Voltar"
+                icon="fa fa-arrow-left"
+                severity="secondary"
+                (click)="activateCallback(1)"
+              />
+              <p-button
+                label="Registrar Cliente"
+                icon="fa fa-user-plus"
+                severity="success"
+                [disabled]="!primeiraEtapaNovoClienteValida || !segundaEtapaNovoClienteValida"
+                (click)="registrarCliente()"
+              />
+            </div>
+          </ng-template>
+        </p-step-panel>
+      </form>
+    </p-step-panels>
+  </p-stepper>
+</p-dialog>

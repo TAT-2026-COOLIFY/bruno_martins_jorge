@@ -1,0 +1,25 @@
+@if (possuiImagem) {
+  <p-image
+    [src]="srcImagem"
+    [alt]="alt"
+    [width]="larguraAttr"
+    [height]="alturaAttr"
+    [preview]="preview"
+    [imageStyle]="estiloImagem"
+    appendTo="body"
+  />
+} @else {
+  <div
+    [ngClass]="{
+      'imagem-vazia': true,
+      'imagem-redonda': imagemRedonda,
+      'tamanho-total': tamanhoTotal
+    }"
+    [style.width]="larguraCss"
+    [style.height]="alturaCss"
+    [attr.aria-label]="alt"
+    role="img"
+  >
+    <i [ngClass]="iconePlaceholder"></i>
+  </div>
+}

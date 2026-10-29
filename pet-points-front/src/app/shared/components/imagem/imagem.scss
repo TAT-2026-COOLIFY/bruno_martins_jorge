@@ -1,0 +1,33 @@
+/* Placeholder exibido quando o usuário ou o pet não possui foto. */
+.imagem-vazia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 100px;
+  height: 100px;
+  border: 1px solid var(--color-border);
+  background-color: var(--placeholder-imagem);
+  color: var(--placeholder-imagem-icone);
+  overflow: hidden;
+  /* Permite que o ícone acompanhe o tamanho do placeholder (unidades cq*) */
+  container-type: size;
+
+  &.imagem-redonda {
+    border-radius: 50%;
+  }
+
+  &.tamanho-total {
+    height: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
+  i {
+    line-height: 1;
+    /* Fallback para navegadores sem unidades de container */
+    font-size: 1.5rem;
+    /* clamp evita um ícone gigante caso o container não resolva o tamanho */
+    font-size: clamp(0.7rem, 40cqmin, 5rem);
+  }
+}

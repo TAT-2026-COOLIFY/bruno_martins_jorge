@@ -1,0 +1,75 @@
+main {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1rem;
+  padding: 1rem;
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 1rem 0;
+  }
+
+  section .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 1rem;
+    justify-content: space-between;
+
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      grid-gap: 1rem;
+    }
+
+    .botoes {
+      align-items: center;
+      padding-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      grid-gap: 1rem;
+    }
+  }
+
+  #icone-quantidade {
+    font-size: 1.2em;
+  }
+}
+
+.form-vazio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  textarea {
+    max-height: 200px;
+  }
+  
+  .metade {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .input-group {
+      flex: 1 1 calc(50% - 0.5rem);
+    }
+  }
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+
+  p-button:first-child {
+    flex: 1;
+  }
+}

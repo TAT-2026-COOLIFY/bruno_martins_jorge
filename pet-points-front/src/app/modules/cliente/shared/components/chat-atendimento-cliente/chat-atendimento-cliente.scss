@@ -1,0 +1,487 @@
+:host ::ng-deep .p-dialog:has(.dialog-chat) {
+  display: flex;
+  flex-direction: column;
+}
+
+:host ::ng-deep .dialog-chat.p-dialog-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+:host ::ng-deep .p-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+:host ::ng-deep .p-tabpanels {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 1em 0 0 0;
+}
+
+:host ::ng-deep .p-tabpanel {
+  flex: 1;
+  min-height: 0;
+}
+
+:host ::ng-deep .p-tabpanel:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+}
+
+#btnAbrirChat {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+}
+
+.cabecalho-dialog {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    color: var(--color-title);
+  }
+
+  .btn-voltar {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-card-primary);
+    transition: background-color 0.2s ease;
+    border: none;
+    background-color: transparent;
+
+    &:hover {
+      background-color: var(--card-hover);
+    }
+  }
+}
+
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid var(--background);
+  background-color: var(--color-hover);
+  color: var(--color-card-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* ------------------------------------------------------ central de atendimento */
+
+.central-atendimento {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  p-iconfield,
+  input[type="text"] {
+    width: 100%;
+  }
+
+  .titulo-secao {
+    font-size: 0.85rem;
+    color: var(--color-sub-text);
+  }
+}
+
+.cartao-nova-conversa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  text-align: center;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background-color: var(--color-card-primary-foreground);
+
+  .pilha-avatares {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+
+    .avatar {
+      margin-left: -0.6rem;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &.restantes {
+        background-color: var(--card-hover);
+        color: var(--color-text);
+      }
+    }
+  }
+
+  strong {
+    color: var(--color-card-primary);
+    font-size: 1.1rem;
+  }
+
+  span.apoio {
+    color: var(--color-text);
+    font-size: 0.85rem;
+  }
+}
+
+.lista-atendimentos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  button.atendimento-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    cursor: pointer;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background-color: var(--card);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+
+    &:hover {
+      border-color: var(--color-card-primary);
+      background-color: var(--color-hover);
+    }
+
+    .topo {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+
+      .icone {
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 0.8em;
+        color: var(--color-card-primary);
+        background-color: var(--color-card-primary-foreground);
+      }
+
+      strong {
+        color: var(--color-title);
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+    }
+
+    span.apoio {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--color-sub-text);
+    }
+
+    .rodape {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+
+      span.data {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: var(--color-sub-text);
+      }
+
+      span.status {
+        font-weight: 600;
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        font-size: 0.75rem;
+        padding: 0.1rem 0.6rem;
+        color: var(--color-text);
+
+        &.finalizado {
+          border-color: var(--color-card-primary);
+          color: var(--color-card-primary);
+          background-color: var(--color-card-primary-foreground);
+        }
+
+        &.em_andamento {
+          border-color: var(--bag-iniciado);
+          color: var(--bag-iniciado);
+          background-color: var(--bag-iniciado-foreground);
+        }
+
+        &.pendente {
+          border-color: var(--bag-pendente);
+          color: var(--bag-pendente);
+          background-color: var(--bag-pendente-foreground);
+        }
+      }
+    }
+  }
+}
+
+.sem-resultados {
+  display: block;
+  padding: 1rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-sub-text);
+}
+
+/* ------------------------------------------------------------- solicitação */
+
+.solicitacao-atendimento {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .descricao-solicitacao {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    text-align: center;
+  }
+
+  .formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    textarea {
+      resize: none;
+      border-radius: 12px;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ conversa */
+
+section.chat-selecionado {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 0.75rem;
+
+  .identificacao-atendente {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+
+    .dados {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+
+      strong {
+        color: var(--color-title);
+        font-size: 0.95rem;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: var(--color-sub-text);
+      }
+    }
+  }
+
+  .lista-mensagens {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.25rem;
+    overflow-y: auto;
+
+    .linha-mensagem {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      max-width: 85%;
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-color: var(--color-border);
+        font-size: 0.7rem;
+      }
+
+      .bloco {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 0;
+
+        .bolha {
+          padding: 0.6rem 0.85rem;
+          border-radius: 14px;
+          border-bottom-left-radius: 4px;
+          font-size: 0.9rem;
+          color: var(--color-text);
+          background-color: var(--bag-iniciado-foreground);
+          word-break: break-word;
+          white-space: pre-wrap;
+        }
+
+        span.data {
+          font-size: 0.7rem;
+          color: var(--color-sub-text);
+        }
+      }
+
+      &.voce {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+
+        .bloco {
+          align-items: flex-end;
+
+          .bolha {
+            border-radius: 14px;
+            border-bottom-right-radius: 4px;
+            color: var(--color-card-secondary);
+            background-color: var(--color-card-secondary-foreground);
+          }
+        }
+      }
+    }
+
+    .aguardando {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--color-sub-text);
+
+      .pontos {
+        display: inline-flex;
+        gap: 0.2rem;
+
+        i {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background-color: var(--bag-pendente);
+          animation: pulsar 1.2s infinite ease-in-out;
+
+          &:nth-child(2) {
+            animation-delay: 0.2s;
+          }
+
+          &:nth-child(3) {
+            animation-delay: 0.4s;
+          }
+        }
+      }
+    }
+  }
+
+  .formulario {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.35rem 0.35rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background-color: var(--card);
+
+    input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+
+      &:enabled:focus {
+        border: none;
+        box-shadow: none;
+        outline: none;
+      }
+    }
+  }
+}
+
+@keyframes pulsar {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------------------ avaliação */
+
+.avaliacao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+}
+
+.formulario-finalizacao {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .input-group {
+    margin: 0;
+
+    textarea {
+      resize: none;
+      min-height: 100px;
+    }
+  }
+}

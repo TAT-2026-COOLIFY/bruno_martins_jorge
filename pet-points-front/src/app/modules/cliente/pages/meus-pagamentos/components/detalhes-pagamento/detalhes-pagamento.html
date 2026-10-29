@@ -1,0 +1,281 @@
+<p-toast />
+<p-dialog
+  header="Detalhes do Pagamento"
+  [(visible)]="visibilidade"
+  [draggable]="false"
+  [modal]="true"
+  [style]="{ maxWidth: '800px', width: '100%' }"
+  (onHide)="fecharDialog()"
+>
+  @if (!pagamentoSelecionado) {
+    <div class="loading">
+      <p-progressSpinner></p-progressSpinner>
+    </div>
+  } @else {
+    <p-tabs [value]="0">
+      <p-tablist>
+        <p-tab [value]="0">Informações</p-tab>
+        <p-tab [value]="1">Pagamento</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel [value]="0">
+          <section class="informacoes-pagamento">
+            @if (
+              pagamentoReprovado && pagamentoSelecionado.motivoIndeferimento
+            ) {
+              <div class="aviso reprovado">
+                <i class="fa fa-circle-exclamation"></i>
+                <div>
+                  <strong>Pagamento reprovado</strong>
+                  <span>{{ pagamentoSelecionado.motivoIndeferimento }}</span>
+                </div>
+              </div>
+            }
+            <p-fieldset legend="Resumo do Pagamento">
+              <div class="resumo">
+                <div class="valor">
+                  <span class="rotulo">Valor</span>
+                  <strong>{{
+                    pagamentoSelecionado.valor | currency: "BRL"
+                  }}</strong>
+                </div>
+                <div class="badges">
+                  <app-bag-status-pagamento
+                    [status]="pagamentoSelecionado.statusPagamento"
+                  ></app-bag-status-pagamento>
+                  <app-bag-forma-pagamento
+                    [tipo]="pagamentoSelecionado.tipoPagamento"
+                  ></app-bag-forma-pagamento>
+                  @if (!pagamentoAprovado) {
+                    <p-tag
+                      [severity]="
+                        pagamentoSelecionado.atrasado ? 'danger' : 'warn'
+                      "
+                      [value]="
+                        pagamentoSelecionado.atrasado ? 'Atrasado' : 'Em Tempo'
+                      "
+                      [icon]="
+                        pagamentoSelecionado.atrasado
+                          ? 'fa far fa-clock'
+                          : 'fa fas fa-calendar-times'
+                      "
+                    ></p-tag>
+                  }
+                </div>
+              </div>
+              <hr />
+              <ul class="dados">
+                <li>
+                  <span>Data Limite:</span>
+                  <span>{{
+                    pagamentoSelecionado.dataLimitePagamento !== null
+                      ? pagamentoSelecionado.dataLimitePagamento
+                      : "-"
+                  }}</span>
+                </li>
+                <li>
+                  <span>Identificador:</span>
+                  <span>Nº {{ pagamentoSelecionado.id }}</span>
+                </li>
+              </ul>
+            </p-fieldset>
+            <hr />
+            <p-fieldset legend="Consulta" [toggleable]="true">
+              @if (carregandoInformacoesConsultaPagamento) {
+                <p-skeleton height="110px" />
+              } @else if (consultaPagamento) {
+                <div class="consulta-card">
+                  <app-imagem
+                    [urlImagem]="imagemPet"
+                    [alt]="consultaPagamento.petConsulta"
+                    width="56"
+                    tipo="pet"
+                  ></app-imagem>
+                  <div class="dados-consulta">
+                    <div class="body-card">
+                      <strong>{{ consultaPagamento.petConsulta }}</strong>
+                      <app-bag-status-consulta
+                        [status]="consultaPagamento.statusConsulta"
+                      ></app-bag-status-consulta>
+                    </div>
+                    <span class="veterinario">
+                      Veterinário: {{ consultaPagamento.veterinarioConsulta }}
+                    </span>
+                    <div class="rodape-card">
+                      <p-tag
+                        [value]="consultaPagamento.tipoConsulta"
+                        severity="secondary"
+                      ></p-tag>
+                      <span class="solicitado-em">
+                        {{
+                          consultaPagamento.dataHoraConsulta
+                            | date: "dd/MM/yyyy - HH:mm"
+                        }}
+                      </span>
+                    </div>
+                  </div>
+                  <p-button
+                    label="Ver"
+                    icon="fa fa-eye"
+                    severity="secondary"
+                    (click)="acessarConsulta()"
+                  />
+                </div>
+              } @else {
+                <span class="sem-resultados">
+                  Nenhuma consulta para esse pagamento!
+                </span>
+              }
+            </p-fieldset>
+          </section>
+        </p-tabpanel>
+        <p-tabpanel [value]="1">
+          <section class="acoes-pagamento">
+            @if (pagamentoAprovado) {
+              <div class="aviso aprovado">
+                <i class="fa fa-circle-check"></i>
+                <div>
+                  <strong>Pagamento aprovado</strong>
+                  <span>
+                    Este pagamento já foi quitado, não há nada a fazer por aqui.
+                  </span>
+                </div>
+              </div>
+            } @else {
+              <div class="input-group">
+                <label for="formaPagamento">Forma de Pagamento:</label>
+                <p-inputgroup>
+                  <p-inputgroup-addon>
+                    <i [ngClass]="iconePagamento(novaFormaPagamento)"></i>
+                  </p-inputgroup-addon>
+                  <p-select
+                    id="formaPagamento"
+                    [options]="formasPagamento"
+                    appendTo="body"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Forma de Pagamento"
+                    [(ngModel)]="novaFormaPagamento"
+                  />
+                  <p-inputgroup-addon>
+                    <p-button
+                      pTooltip="Salvar forma de pagamento"
+                      severity="info"
+                      [icon]="
+                        alterandoFormaPagamento
+                          ? 'pi pi-spin pi-spinner'
+                          : 'fa fa-edit'
+                      "
+                      [disabled]="!podeAlterarFormaPagamento"
+                      (click)="alterarFormaPagamento()"
+                    />
+                  </p-inputgroup-addon>
+                </p-inputgroup>
+                <span class="ajuda">
+                  Escolha uma forma diferente e confirme no botão ao lado para
+                  salvar a alteração.
+                </span>
+              </div>
+              @if (pagamentoCartao) {
+                <p-button
+                  label="Realizar Pagamento"
+                  severity="success"
+                  icon="fa far fa-credit-card"
+                  fluid
+                  [disabled]="
+                    novaFormaPagamento !== pagamentoSelecionado.tipoPagamento
+                  "
+                  (click)="realizarPagamento()"
+                ></p-button>
+                @if (
+                  novaFormaPagamento !== pagamentoSelecionado.tipoPagamento
+                ) {
+                  <span class="ajuda">
+                    Salve a alteração da forma de pagamento para liberar o
+                    pagamento online.
+                  </span>
+                }
+              } @else if (pagamentoPix) {
+                @if (
+                  novaFormaPagamento !== pagamentoSelecionado.tipoPagamento
+                ) {
+                  <span class="ajuda">
+                    Salve a alteração da forma de pagamento para exibir o QR
+                    Code do PIX.
+                  </span>
+                } @else if (carregandoPix) {
+                  <div class="pix-loading">
+                    <p-skeleton height="200px" width="200px" />
+                    <p-skeleton height="40px" width="100%" />
+                  </div>
+                } @else if (pixInfo?.qrCodeBase) {
+                  <div class="pix-qrcode">
+                    <div class="aviso neutro">
+                      <i class="fa fa-qrcode"></i>
+                      <div>
+                        <strong>Pagamento via PIX</strong>
+                        <span>
+                          Escaneie o QR Code abaixo com o app do seu banco ou
+                          copie o código para pagar.
+                        </span>
+                      </div>
+                    </div>
+                    <div class="qrcode-container">
+                      @if (pixInfo !== null && pixInfo.qrCodeBase !== null) {
+                        <img
+                          [src]="'data:image/png;base64,' + pixInfo.qrCodeBase"
+                          alt="QR Code PIX"
+                          class="qrcode-img"
+                        />
+                      }
+                    </div>
+                    <p-button
+                      [label]="pixCopiado ? 'Copiado!' : 'Copiar código PIX'"
+                      [icon]="pixCopiado ? 'fa fa-check' : 'fa fa-copy'"
+                      [severity]="pixCopiado ? 'success' : 'info'"
+                      fluid
+                      (click)="copiarCodigoPix()"
+                    ></p-button>
+                    @if (pixInfo !== null && pixInfo.urlPagamento !== null) {
+                      <a
+                        [href]="pixInfo.urlPagamento"
+                        target="_blank"
+                        class="link-pagamento"
+                      >
+                        <i class="fa fa-external-link"></i>
+                        Abrir página de pagamento
+                      </a>
+                    }
+                  </div>
+                } @else {
+                  <div class="aviso neutro">
+                    <i class="fa fa-circle-exclamation"></i>
+                    <div>
+                      <strong>QR Code indisponível</strong>
+                      <span>
+                        Não foi possível gerar o QR Code do PIX. Tente novamente
+                        mais tarde ou entre em contato com a clínica.
+                      </span>
+                    </div>
+                  </div>
+                }
+              } @else {
+                <div class="aviso neutro">
+                  <i class="fa fa-circle-info"></i>
+                  <div>
+                    <strong>Pagamento presencial</strong>
+                    <span>
+                      Pagamentos em dinheiro são acertados diretamente na
+                      clínica. Para pagar por aqui, altere a forma de pagamento
+                      para Cartão ou Pix.
+                    </span>
+                  </div>
+                </div>
+              }
+            }
+          </section>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  }
+</p-dialog>

@@ -1,0 +1,290 @@
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { PrimeNGModule } from '../../../../shared/modules/prime-ng/prime-ng-module';
+import type { LogDto } from './models/LogDto';
+import { LogsService } from './service/logs-service';
+import { BagLog } from './components/bag-log/bag-log';
+import { TipoLogOpcoes } from './models/TipoLogOpcoes';
+import type { UsuarioLogDto } from './models/UsuarioLogDto';
+import { ChartModule } from 'primeng/chart';
+import { TipoLogEnum } from './models/TipoLogEnum';
+import {
+  CORES_GRAFICO_CICLICAS,
+  CORES_POR_TIPO_LOG,
+} from '../../../../shared/styles/cores-logs';
+
+@Component({
+  selector: 'app-logs-sistema',
+  imports: [PrimeNGModule, BagLog, ChartModule],
+  templateUrl: './logs-sistema.html',
+  styleUrl: './logs-sistema.scss',
+})
+export class LogsSistema {
+  private listaLogs: LogDto[] = [];
+  public carregandoLogs = false;
+  public basicData = {};
+  public basicOptions = {};
+  public readonly opcoesTipoLogs = TipoLogOpcoes;
+  public usuariosLogs: UsuarioLogDto[] = [];
+  public logsFiltrados: LogDto[] = [];
+  private readonly service = inject(LogsService);
+  public filtros = { tipo: '', data_hora: [], usuario: null };
+  public tipoFiltro = 'usuarios';
+  private readonly cd = inject(ChangeDetectorRef);
+  public carregandoGrafico = false;
+  public carregandoRelatorio = false;
+  public dataMaxima = new Date();
+
+  constructor() {
+    this.buscarLogs();
+    this.buscarUsuariosLogs();
+  }
+
+  private buscarLogs(): void {
+    this.listaLogs = [];
+    this.logsFiltrados = [];
+    this.carregandoLogs = true;
+    this.service.buscarLogs().subscribe({
+      next: (res: LogDto[]) => {
+        this.listaLogs = res;
+        this.logsFiltrados = res;
+        if (
+          !this.opcoesTipoLogs
+            .map((a) => a.label.toLowerCase())
+            .includes('todos')
+        )
+          this.opcoesTipoLogs.unshift({ label: 'Todos', value: '' });
+        this.formatarParaGrafico();
+        setTimeout(() => {
+          this.carregandoLogs = false;
+        }, 2000);
+      },
+      error: () => {
+        setTimeout(() => {
+          this.carregandoLogs = false;
+        }, 2000);
+      },
+    });
+  }
+
+  private buscarUsuariosLogs(): void {
+    this.usuariosLogs = [];
+    this.service.listarUsuariosLogs().subscribe({
+      next: (res: UsuarioLogDto[]) => {
+        this.usuariosLogs = res;
+      },
+    });
+  }
+
+  public gerarRelatorio(): void {
+    this.carregandoRelatorio = true;
+    const form = {
+      idUsuario: this.filtros.usuario || null,
+      datas: this.filtros.data_hora.join(','),
+      tipo: this.filtros.tipo || null,
+    };
+    this.service.gerarRelatorio(form).subscribe({
+      next: (res: Blob) => {
+        const file = new Blob([res], { type: 'application/pdf' });
+        const fileURL = URL.createObjectURL(file);
+        window.open(fileURL);
+        this.carregandoRelatorio = false;
+      },
+      error: () => {
+        this.carregandoRelatorio = false;
+      },
+    });
+  }
+
+  public formatarLabel(label: string): string {
+    let formatada = '';
+    const labelSplit: string[] = label.split('_');
+    if (labelSplit.length > 1) {
+      const primeiraParte =
+        labelSplit[0].charAt(0).toUpperCase() +
+        labelSplit[0].slice(1).toLocaleLowerCase();
+      const segundaParte =
+        labelSplit[1].charAt(0).toUpperCase() +
+        labelSplit[1].slice(1).toLocaleLowerCase();
+      formatada = `${primeiraParte} ${segundaParte}`;
+    } else {
+      const primeiro =
+        labelSplit[0].charAt(0).toUpperCase() +
+        labelSplit[0].slice(1).toLocaleLowerCase();
+      formatada = `${primeiro}`;
+    }
+    return formatada;
+  }
+
+  private readonly coresGrafico = [
+    '--p-cyan-500',
+    '--p-red-500',
+    '--p-orange-500',
+    '--p-green-500',
+    '--p-purple-500',
+    '--p-yellow-500',
+    '--p-blue-500',
+    '--p-pink-500',
+    '--p-teal-500',
+    '--p-indigo-500',
+    '--p-gray-500',
+  ];
+
+  private readonly coresPorTipoLog: Record<TipoLogEnum, string> = {
+    [TipoLogEnum.LOGIN]: '--color-card-primary',
+    [TipoLogEnum.REGISTRO]: '--color-card-primary',
+    [TipoLogEnum.ERRO]: '--bag-reprovado',
+    [TipoLogEnum.MOVIMENTACAO_ENTRADA]: '--p-green-500',
+    [TipoLogEnum.MOVIMENTACAO_SAIDA]: '--p-orange-500',
+    [TipoLogEnum.SE_DESATIVOU]: '--p-gray-500',
+    [TipoLogEnum.CANCELOU_CONSULTA]: '--p-red-500',
+    [TipoLogEnum.SOLICITOU_CONSULTA]: '--p-cyan-500',
+    [TipoLogEnum.DEFERIU_CONSULTA]: '--p-green-500',
+    [TipoLogEnum.CONSULTA_INICIADA]: '--p-blue-500',
+    [TipoLogEnum.CONSULTA_FINALIZADA]: '--p-indigo-500',
+    [TipoLogEnum.DESATIVOU_PERFIL]: '--p-gray-500',
+    [TipoLogEnum.INDEFERIU_CONSULTA]: '--p-red-500',
+    [TipoLogEnum.EDITOU_TIPO_CONSULTA]: '--p-purple-500',
+    [TipoLogEnum.ADICIONOU_CLIENTE]: '--p-teal-500',
+    [TipoLogEnum.REGISTROU_PRODUTO]: '--p-green-500',
+    [TipoLogEnum.REMOVEU_PRODUTO]: '--p-red-500',
+    [TipoLogEnum.EDITOU_PRODUTO]: '--p-yellow-500',
+    [TipoLogEnum.REGISTROU_PAGAMENTO_PRESENCIAL]: '--p-cyan-500',
+    [TipoLogEnum.INDEFERIU_PAGAMENTO]: '--p-red-500',
+  };
+
+  private formatarParaGrafico(): void {
+    this.carregandoGrafico = true;
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--p-text-color');
+    const textColorSecondary = documentStyle.getPropertyValue(
+      '--p-text-muted-color',
+    );
+    const surfaceBorder = documentStyle.getPropertyValue(
+      '--p-content-border-color',
+    );
+
+    const chartData = this.agruparLogsPorFiltro();
+
+    this.basicData = {
+      labels: chartData.labels,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      datasets: chartData.datasets.map((ds: any, index: number) => {
+        const label = ds.label.toUpperCase() as TipoLogEnum;
+        const variavelCor =
+          this.tipoFiltro === 'tipo'
+            ? CORES_POR_TIPO_LOG[label as TipoLogEnum]
+            : undefined;
+        const cor = documentStyle.getPropertyValue(
+          variavelCor ??
+          CORES_GRAFICO_CICLICAS[index % CORES_GRAFICO_CICLICAS.length],
+        );
+        return { ...ds, borderColor: cor, backgroundColor: cor };
+      }),
+    };
+
+    this.basicOptions = {
+      maintainAspectRatio: false,
+      aspectRatio: 0.6,
+      plugins: {
+        legend: { labels: { color: textColor } },
+      },
+      scales: {
+        x: {
+          ticks: { color: textColorSecondary },
+          grid: { color: surfaceBorder, drawBorder: false },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: textColorSecondary },
+          grid: { color: surfaceBorder, drawBorder: false },
+        },
+      },
+    };
+
+    this.cd.markForCheck();
+    this.carregandoGrafico = false;
+  }
+
+  private agruparLogsPorFiltro(): {
+    labels: string[];
+    datasets: unknown[];
+  } {
+    const mapa: Record<string, Record<string, number>> = {};
+
+    const datasSet = new Set<string>();
+
+    this.logsFiltrados.forEach((log) => {
+      const tipo = this.tipoFiltro === 'usuario' ? log.lancadoPor : log.tipo;
+      const data = log.registradoEm;
+      datasSet.add(data);
+      if (!mapa[tipo]) {
+        mapa[tipo] = {};
+      }
+      mapa[tipo][data] = (mapa[tipo][data] || 0) + 1;
+    });
+
+    const labels = Array.from(datasSet).sort();
+
+    const chaves = Object.keys(mapa).sort(); // ordem estável para o mapeamento de cores
+
+    const datasets = chaves.map((tipo) => ({
+      label: this.formatarLabel(tipo),
+      data: labels.map((data) => mapa[tipo][data] || 0),
+      fill: false,
+      tension: 0.4,
+    }));
+
+    return { labels, datasets };
+  }
+
+  public limparFiltros(): void {
+    this.filtros = { tipo: '', data_hora: [], usuario: null };
+    this.filtrarLogs();
+  }
+
+  public get habilitarBotaoLimparFiltros(): boolean {
+    const temData = this.filtros.data_hora.length > 0;
+    const temUsuario = this.filtros.usuario != null;
+    return temData || temUsuario;
+  }
+
+  private parseData(logData: string): Date {
+    const [data, hora] = logData.split(' - ');
+
+    const [dia, mes, ano] = data.split('/').map(Number);
+    const [h, m, s] = hora.split(':').map(Number);
+
+    return new Date(ano, mes - 1, dia, h, m, s);
+  }
+
+  public filtrarLogs(): void {
+    const temTipo = !!this.filtros.tipo;
+    const temData = !!this.filtros.data_hora?.length;
+    const temUsuario = !!this.filtros.usuario;
+
+    if (!temTipo && !temData && !temUsuario) {
+      this.logsFiltrados = this.listaLogs;
+      return;
+    }
+
+    const dataInicio = temData ? new Date(this.filtros.data_hora[0]) : null;
+    const dataFim = temData ? new Date(this.filtros.data_hora[1]) : null;
+
+    this.logsFiltrados = this.listaLogs.filter((log) => {
+      const matchTipo = !temTipo || log.tipo === this.filtros.tipo;
+
+      const dataLog = this.parseData(log.registradoEm);
+
+      const matchData =
+        !temData ||
+        (dataLog >= dataInicio! && dataLog <= (dataFim || dataInicio)!);
+
+      const matchUsuario =
+        !temUsuario || log.lancadoPorId === this.filtros.usuario;
+
+      return matchTipo && matchData && matchUsuario;
+    });
+
+    this.formatarParaGrafico();
+  }
+}
