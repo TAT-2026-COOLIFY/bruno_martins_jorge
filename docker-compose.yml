@@ -1,0 +1,14 @@
+services:
+  backend:
+    build: ./pet-points-back
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    expose:
+      - "8080"
+
+  frontend:
+    build: ./pet-points-front
+    expose:
+      - "80"
