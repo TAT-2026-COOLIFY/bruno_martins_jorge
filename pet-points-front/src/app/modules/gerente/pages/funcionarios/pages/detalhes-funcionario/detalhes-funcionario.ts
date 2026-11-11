@@ -128,7 +128,7 @@ export class DetalhesFuncionario implements OnInit {
   public get getImagemFuncionario(): string {
     if (!this.funcionario) return '';
     const uuid = this.funcionario.arquivo || '';
-    return uuid !== '' ? environment.apiUrl + '/arquivos/' + uuid : '';
+    return uuid !== '' ? '/api' + '/arquivos/' + uuid : '';
   }
 
   public carregarArquivo(event: FileSelectEvent): void {

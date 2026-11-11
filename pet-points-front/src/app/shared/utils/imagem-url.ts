@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
  */
 export function urlArquivo(uuid: string | null | undefined): string {
   if (uuid == null || uuid.trim() === '') return '';
-  return `${environment.apiUrl}/arquivos/${uuid.trim()}`;
+  return `${'/api'}/arquivos/${uuid.trim()}`;
 }
 
 /**
@@ -22,5 +22,5 @@ export function urlImagemUsuarioPorId(
   idUsuario: number | string | null | undefined,
 ): string {
   if (idUsuario == null || String(idUsuario).trim() === '') return '';
-  return `${environment.apiUrl}/arquivos/usuario/${idUsuario}`;
+  return `${'/api'}/arquivos/usuario/${idUsuario}`;
 }

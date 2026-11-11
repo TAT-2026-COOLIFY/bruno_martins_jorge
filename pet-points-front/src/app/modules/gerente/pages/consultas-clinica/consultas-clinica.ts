@@ -440,7 +440,7 @@ export class ConsultasClinica implements OnInit {
   }
 
   public urlAvatar(idUsuario: number): string {
-    return environment.apiUrl + '/arquivos/usuario/' + idUsuario;
+    return '/api' + '/arquivos/usuario/' + idUsuario;
   }
 
   public urlImagem(uuid: string | null | undefined): string {

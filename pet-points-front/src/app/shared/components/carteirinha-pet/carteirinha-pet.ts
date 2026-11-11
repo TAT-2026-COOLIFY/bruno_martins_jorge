@@ -12,7 +12,7 @@ import { environment } from '../../../../environments/environment';
 export class CarteirinhaPet {
   @Input({ required: true }) pet!: CarteirinhaPetDto;
 
-  public readonly imagemBaseUrl = environment.apiUrl + '/arquivos/';
+  public readonly imagemBaseUrl = '/api' + '/arquivos/';
 
   @Input() mascararCpf = true;
 

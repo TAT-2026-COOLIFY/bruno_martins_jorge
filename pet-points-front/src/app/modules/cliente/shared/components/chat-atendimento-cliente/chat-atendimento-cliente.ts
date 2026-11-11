@@ -108,8 +108,8 @@ export class ChatAtendimentoCliente implements OnInit, OnDestroy {
     }
   }
 
-  public urlAvatar(idUsuario: number | undefined): string {    
-    return environment.apiUrl + '/arquivos/usuario/' + idUsuario;
+  public urlAvatar(idUsuario: number | undefined): string {
+    return '/api' + '/arquivos/usuario/' + idUsuario;
   }
 
   /** Sem foto no perfil o endpoint responde erro; aí o avatar cai para as iniciais. */
