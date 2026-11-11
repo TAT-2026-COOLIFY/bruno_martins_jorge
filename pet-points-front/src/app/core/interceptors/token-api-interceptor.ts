@@ -22,7 +22,7 @@ export const tokenApiInterceptor: HttpInterceptorFn = (req, next) => {
   const env = environment;
 
   // Pega a URL da API do ambiente
-  const apiUrl = env.apiUrl;
+  const apiUrl = '/api';
 
   // Verifica se a URL da requisição começa com a URL da API
   if (!req.url.startsWith(apiUrl))
