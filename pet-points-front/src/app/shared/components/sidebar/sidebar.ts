@@ -128,7 +128,7 @@ export class Sidebar {
     if (!possuiImagem) return '';
     const idUsuario = this.tokenService.decodeToken(token).id_usuario;
     return idUsuario !== ''
-      ? '/api'; + '/arquivos/usuario/' + idUsuario
+      ? '/api' + '/arquivos/usuario/' + idUsuario
       : '';
   }
 
