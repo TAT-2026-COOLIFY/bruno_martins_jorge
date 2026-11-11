@@ -43,7 +43,9 @@ jobs:
     steps:
       - name: Disparar deploy no Coolify
         run: |
-          curl --fail --silent --show-error \
-            --request GET \
+          status=$(curl --silent --output response.txt --write-out "%{http_code}" \
             --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-            "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=vyg63jz3hrnumqdemdynzk53&force=false"
+            "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=vyg63jz3hrnumqdemdynzk53&force=false")
+          echo "HTTP $status"
+          cat response.txt
+          test "$status" -lt 400
