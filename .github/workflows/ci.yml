@@ -44,8 +44,11 @@ jobs:
       - name: Disparar deploy no Coolify
         run: |
           status=$(curl --silent --output response.txt --write-out "%{http_code}" \
-            --header "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-            "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=vyg63jz3hrnumqdemdynzk53&force=false")
-          echo "HTTP $status"
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+            "${{ secrets.COOLIFY_WEBHOOK_URL }}")
           cat response.txt
-          test "$status" -lt 400
+          if [ "$status" -ne 200 ]; then
+            echo "Falha no deploy: HTTP $status"
+            exit 1
+          fi
