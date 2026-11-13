@@ -41,6 +41,11 @@ jobs:
     needs: [backend, frontend]
     runs-on: ubuntu-latest
     steps:
+      - name: Checar secrets
+        run: |
+          [ -z "${{ secrets.COOLIFY_WEBHOOK_URL }}" ] && echo "WEBHOOK_URL vazio"
+          [ -z "${{ secrets.COOLIFY_TOKEN }}" ] && echo "TOKEN vazio"
+          true
       - name: Disparar deploy no Coolify
         run: |
           status=$(curl --silent --output response.txt --write-out "%{http_code}" \
