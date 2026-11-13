@@ -51,7 +51,7 @@ jobs:
           status=$(curl --silent --output response.txt --write-out "%{http_code}" \
             -X POST \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-            "${{ secrets.COOLIFY_WEBHOOK_URL }}")
+            "${{ secrets.COOLIFY_URL }}")
           cat response.txt
           if [ "$status" -ne 200 ]; then
             echo "Falha no deploy: HTTP $status"
